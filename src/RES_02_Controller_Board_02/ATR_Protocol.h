@@ -1,3 +1,18 @@
+/*********************************************************************
+*   Protocol description:  
+*           this is a simple link frame protocoal with the below stucture and rules
+*           1) Structure   {Preamble bits}{message type}{payload}{tailer}
+*           2) max buffer length  (64 byte)
+*           3) {Preamble bits} 3byte='<','@',' ' 
+*           4) {message type} "odom", "cmd", "gen", and others
+*           5) {payload} any string massage with ' '(space) delimiter 
+*           6) {tailer} 3byte='#','>','\n'   ==> 
+*           if you want to implement CRC on tailer, sendter need to add message length right after {Preamble bits} 
+*           and then replace {tailer} with CRC. In addition, receiver need to check message length and then read  
+*           rest of payroad & CRC bit based on the length informaiton for a message evaluation 
+*                      
+***********************************************************************/
+
 #ifndef ATR_Protocol_h
 #define ATR_Protocol_h
 
