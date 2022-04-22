@@ -5,7 +5,7 @@
 *
 * Author            : Jong-Hoon Kim
 *
-* Date created      : 03/10/2020
+* Date created      : 04/22/2022
 *
 * Purpose           : How to setup a bluetooth serial module (HC-05) as master and slave.
 *
@@ -13,6 +13,10 @@
 *
 * Date        Author      Ref    Revision (Date in MMDDYYYY format) 
 * MMDDYYYY    name      1  v-xx   revision note. 
+*
+*  04/22/2022  Jong Hooo Kim  v-02    Serial Configration should be (Even pairty and 1 stop bit)
+*                                     How to setup  in Bluetooth : "AT+UART=115200,2,1"      //   -- "AT+UART=115200,0,0" is defulat of Arduino but no good perfomance in this bluetooth module
+*                                     How to setup  in Arduino : Serial.begin(115200,SERIAL_8E2); Serial1.begin(115200,SERIAL_8E2)  
 *
 *********************************************************************/
 /*********************************************************************
@@ -40,11 +44,11 @@
 *       -- e.g. "AT+NAME=KIM_MASTER"  then you will see "OK"
 *       -- for checking the updated result, type "AT+NAME", then you should see "+NAME:KIM_MASTER"  
 *     5) Communication Speed Setup (115200 bps)
-*       -- type "AT+UART=115200,0,0" 
+*       -- type "AT+UART=115200,2,1"      //   -- "AT+UART=115200,0,0" is defulat of Arduino but no good perfomance in this bluetooth module
 *       
 *     6) Setup Slave Bluetooth
 *       1) Get Bluetooth Address for paring purpuse so you need to note the address
-*       -- Type "AT+ADDR" and then you will see "+ADDR:XXXX:YY:ZZZZZZ", here "XXXX:YY:ZZZZZZ" is the address
+*       -- Type "AT+ADDR?" and then you will see "+ADDR:XXXX:YY:ZZZZZZ", here "XXXX:YY:ZZZZZZ" is the address
 *       2) setup slave role ( "AT+ROLE=0"), master role ("AT+ROLE=1")
 *       -- e.g. slave node, Type "AT+ROLE=0"
 *       -- after setup this role, it occurs automatic reboot the bluetooth module
