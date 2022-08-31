@@ -30,7 +30,7 @@
 |Office Location:|MSB 236-B|
 |Office Phone:|330-672-9060|
 |e-mail:|jkim72@kent.edu|
-|Office Hours:|Monday and Wednesday: <br/> 10:30 AM - 11:00 AM (MSB 104) <br/> 12:15 PM ~ 13:30 PM (MSB 236-A) <br/> Other times by appointment|
+|Office Hours:|Monday and Wednesday: <br/> 10:30 AM - 11:00 AM (MSB 104) <br/> 12:15 PM ~ 13:30 PM (MSB 236-B) <br/> Other times by appointment|
 |---|---|
 
 ### Prerequisite:
