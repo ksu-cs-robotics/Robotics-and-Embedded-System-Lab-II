@@ -26,10 +26,10 @@
 
 |||
 |--|--|
-|Class Instructor:|Xiangxu Lin|
-|Office Location:|MSB 236-A|
+|Class Instructor:|Dr. Jong-Hoon Kim|
+|Office Location:|MSB 236-B|
 |Office Phone:|330-672-9060|
-|e-mail:|xlin10@kent.edu|
+|e-mail:|jkim72@kent.edu|
 |Office Hours:|Monday and Wednesday: <br/> 10:30 AM - 11:00 AM (MSB 104) <br/> 12:15 PM ~ 13:30 PM (MSB 236-A) <br/> Other times by appointment|
 |---|---|
 
@@ -106,22 +106,21 @@ Attendance, Participation, and (in class) Pop Quiz|10%|individual|
 ||||
 |--|--|--|
 |Week1| Introduction of Robotics and Embedded System Lab course, schedule/requirements|
-|Week2| Setup Development Environment (Arduino and GitHub)|
-|Week3| Control-Board Soldering |
-|Week4| Menu and Main Program Design|
-|Week5| Oreintation (I2C with IMU)|
-|Week6| Motor Control and Bluetooth communication - Master and Slave (Mini-car)|
-|Week7| Odometer - Speedometer - angular velocity and liner velocity (Rotary Encoder and Interrupt )|
-|Week8| Communication ( Protocol, Composing and Parsing, and Bluetooth - Master and Slave) |
-|Week9| RC Control Car - Joystick control|
-|Week10| Localiazation -1 ( Dead Reckoning Calculation ) |
-|Week11| Localiazation -2 ( Runge–Kutta methods) |
-|Week12| **Spring Break**|
-|Week13| SLAM (Sonar Scanner - Proximity sensor )|
-|Week14| Sensoring Enhancement - Noise Filtering|
-|Week15| Robot Competition - Final|
-|Week16| Final Project Presentation - (10min presentation & 5 min QnA)|
-|Week17| **Final Exam Week** if needed|
+|Week2| Setup Development Environment (Arduino and GitHub)& Review RES-1 ( Mechatronic and Arduino Basic) |
+|Week3| Communication - ISP (Boot Loader), I2C Basic (OLED) |
+|Week4| IMU (I2C)|
+|Week5| Protocol Design (Message Frame/ Encode-Decode/ Error Detection)|
+|Week6| Microcontroller (Midterm) and PCB Design and Manufacturing Process|
+|Week7| Interrupt and encoder |
+|Week8| Proximity Sensors   |
+|Week9| Interrupt and encoder |
+|Week10| PID Control |
+|Week11| Localization - 1 (Odometry, Linear and Angular Velocity)|
+|Week12| Localiazation -2 ( Runge–Kutta methods) |
+|Week13| Thanksgiving Break
+|Week14| System Intergraion and Special Topic |
+|Week15| Final Project Presentation & Demo/Competition- (10min presentation & 5 min QnA)|
+|Week16| **Final Exam Week** if needed|
 
 ### Course policy:
 1. **Class participation and preparation**
