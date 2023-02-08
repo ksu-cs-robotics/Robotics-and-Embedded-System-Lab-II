@@ -33,13 +33,13 @@
 #include <TinyMPU6050.h>
 #include <Servo.h>
 
-#define PIN_SONAR_PING              45
-#define PIN_SONAR_ECHO              47
-#define PIN_SERVO                   5
+#define PIN_SONAR_PING              A3
+#define PIN_SONAR_ECHO              A2
+#define PIN_SERVO                   12
 
-#define MIN_SONAR_ANGLE      30
+#define MIN_SONAR_ANGLE      60
 #define MID_SONAR_ANGLE      90
-#define MAX_SONAR_ANGLE      150
+#define MAX_SONAR_ANGLE      120
 #define MAX_SONAR_VALUE       350      // e.g. 650 mm is max range 
 #define STRID_SONAR_ANGLE     5
 
@@ -63,7 +63,7 @@ int total = 0;                  // the running total
 int average = 0;                // the average
 
 int sonar[2][180];
-int sonarAngle  = 30;
+int sonarAngle  = 90;
 int sonarScanDirection = 0;
 float prev = 0.0; float now = 0.0; float alpha = 0.99;  float beta = 0.01;
 
@@ -72,8 +72,8 @@ void setup() {
   Serial.begin(115200);
   // IMU init
   mpu.Initialize();
-//  Serial.println("Starting calibration...");
-//  mpu.Calibrate();
+  Serial.println("Starting calibration...");
+  mpu.Calibrate();
 
   // Sonar Setting
   pinMode(PIN_SONAR_PING, OUTPUT);     pinMode(PIN_SONAR_ECHO, INPUT);
@@ -91,21 +91,21 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   // IMU data sending
-//  mpu.Execute();
-//  Serial.print("imu ");
-//  Serial.print((int)(mpu.GetAngZ()));
-//  Serial.print(" ");
-//  Serial.print((int)(mpu.GetAngX()));
-//  Serial.print(" ");
-//  Serial.println((int)(mpu.GetAngY()));
-
+  mpu.Execute();
+  Serial.print("imu ");
+  Serial.print((int)(mpu.GetAngX()));
+  Serial.print(" ");
+  Serial.print((int)(mpu.GetAngY()));
+  Serial.print(" ");
+  Serial.println((int)(mpu.GetAngZ()));
+//  delay(100);
   // Servo motor position
   if (sonarScanDirection == 0){ // increase scan angle
     sonarAngle++;
-    if (sonarAngle >= 150) sonarScanDirection = 1;     
+    if (sonarAngle >= 120) sonarScanDirection = 1;     
   }else{
     sonarAngle--;
-    if (sonarAngle <= 30) sonarScanDirection = 0;     
+    if (sonarAngle <= 60) sonarScanDirection = 0;     
     
   }
   myServo.write(sonarAngle);

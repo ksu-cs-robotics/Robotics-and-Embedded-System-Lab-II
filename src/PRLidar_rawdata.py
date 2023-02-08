@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Redirect data from a TCP/IP connection to a serial port and vice versa.
+# PRLidar Raw data reading.
 #
 # (C) 2002-2016 Chris Liechti <cliechti@gmx.net>
 #
@@ -9,15 +9,15 @@
 ##########################################################################
 # Project           : RES_Class, Sonar Scan, Drawing Location/Path of the robot 
 #
-# Program name      : Smoothing.py
+# Program name      : PRLidar_rawdata.py
 #
 # Author            : Jong-Hoon Kim
 #
-# Date created      : 04/12/2020
+# Date created      : 04/29/2022
 #
-# Purpose           : 1) Read a message ('/n' is the end of the message frame) from serial port 
-#			2) split the message based on ' ' (space)
-#			3) check message type and draw the postion 
+# Purpose           : 1) Read a message from serial port (PRLadir is connected)
+#			2) split the message based on prlidar protocal
+#
 #						
 #
 # Revision History  :
@@ -40,23 +40,7 @@ import numpy as np
 import cv2
 
 
-img = np.zeros((800,1000,3), np.uint8)
-img = cv2.line(img,(500,0),(500,800),(255,255,0),1)
-img = cv2.line(img,(0,400),(1000,400),(255,255,0),1)
-img1 = img.copy()
-img2 = img.copy()
-img3 = img.copy()
-img4 = img.copy()
-
-img_imu = np.zeros((500,500,3), np.uint8)
-img_imu = cv2.circle(img_imu,(255,255),(210),(255,255,0),5)
-
-img_sonar = np.zeros((800,800,3), np.uint8)
-img_sonar = cv2.circle(img_sonar,(400,400),(350),(255,255,0),5)
-
-
-#ser = serial.Serial('/dev/ttyACM0', 115200) # Establish the connection on a specific port
-ser = serial.Serial('COM17', 115200) # Establish the connection on a specific port
+ser = serial.Serial('COM41', 115200) # Establish the connection on a specific port
 counter = 32 # Below 32 everything in ASCII is gibberish
 
 ser.reset_input_buffer()	# remove any previous data

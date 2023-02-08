@@ -46,7 +46,8 @@ img2 = img.copy()
 img3 = img.copy()
 img4 = img.copy()
 
-ser = serial.Serial('/dev/ttyACM0', 115200) # Establish the connection on a specific port
+#ser = serial.Serial('/dev/ttyACM0', 115200) # Establish the connection on a specific port
+ser = serial.Serial('COM17', 115200) # Establish the connection on a specific port
 counter = 32 # Below 32 everything in ASCII is gibberish
 
 ser.reset_input_buffer()	# remove any previous data
@@ -69,10 +70,10 @@ while True:
 	try:
 		#print msg
 		str = msg.split( )
-		print str
+		print (str)
 		#print len(str)
-		if str[0] == "orgData":
-			print "orgData"
+		if str[0] == b"orgData":
+			print (str[0])
 			xPntP = xPnt
 			yPntP = yPnt
 			xPnt = int(str[1])
@@ -81,8 +82,8 @@ while True:
 			cv2.imshow('smoothing',img)
 			cv2.imshow('orgData',img)
 			cv2.waitKey(3)
-		elif str[0] == "avrOnly" :
-			print "avrOnly"
+		elif str[0] == b"avrOnly" :
+			print (str[0])
 			xPntP1 = xPnt1
 			yPntP1 = yPnt1
 			xPnt1 = int(str[1])
@@ -93,8 +94,8 @@ while True:
 			cv2.imshow('avrOnly',img1)
 			cv2.waitKey(3)
 
-		elif str[0] == "avrWSW" :
-			print "avrWSW"
+		elif str[0] == b"avrWSW" :
+			print (str[0])
 			xPntP2 = xPnt2
 			yPntP2 = yPnt2
 			xPnt2 = int(str[1])
@@ -105,8 +106,8 @@ while True:
 			cv2.imshow('avrWSW',img2)
 			cv2.waitKey(3)
 
-		elif str[0] == "formula" :
-			print "formula"
+		elif str[0] == b"formula" :
+			print (str[0])
 			xPntP3 = xPnt3
 			yPntP3 = yPnt3
 			xPnt3 = int(str[1])
@@ -117,8 +118,8 @@ while True:
 			cv2.imshow('formula',img3)
 			cv2.waitKey(3)
 
-		elif str[0] == "kalman" :
-			print "kalman"
+		elif str[0] == b"kalman" :
+			print (str[0])
 			xPntP4 = xPnt4
 			yPntP4 = yPnt4
 			xPnt4 = int(str[1])
@@ -129,8 +130,8 @@ while True:
 			cv2.imshow('kalman',img4)
 			cv2.waitKey(3)
 
-		elif str[0] == "path" :
-			print "path"
+		elif str[0] == b"path" :
+			print (str[0])
 			xPntP5 = xPnt5
 			yPntP5 = yPnt5
 			xPnt5 = int(float(str[1]))

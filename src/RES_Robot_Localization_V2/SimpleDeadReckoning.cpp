@@ -78,6 +78,8 @@ void SimpleDeadReckoning::updateLocation(float argLeftEncoder, float argRightEnc
 //  _yLocation = _pYLocation + (deltaS * sin( _pTheta + (deltaTheta/2.0) )) ;
 
 
+// Runge-Kutta integration (4th order)
+// need to be implemented 
 
 
 

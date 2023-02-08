@@ -26,49 +26,18 @@
 #include <Arduino.h>
 #include <TinyMPU6050.h>
 #include "SimpleDeadReckoning.h"
+#include "Config.h"
 
 /*
  *  Constructing MPU-6050
  */
-MPU6050 mpu (Wire);
-
-#define PIN_IR_LEFT                 A0          // 
-#define PIN_IR_RIGHT                A1          // 
-#define PIN_ENCODER_LEFT_CLK        5          // need to be changed = interrupt        
-#define PIN_ENCODER_LEFT_DT         3          // need to be changed = interrupt       
-#define PIN_ENCODER_RIGHT_CLK       2           // need to be changed = interrupt  
-#define PIN_ENCODER_RIGHT_DT        4           // need to be changed = interrupt
-#define PIN_SONAR_PING              A3
-#define PIN_SONAR_ECHO              A2
-#define PIN_SERVO                   12
-#define PIN_MOTOR_RIGHT_ENA         6
-#define PIN_MOTOR_RIGHT_IN1         7
-#define PIN_MOTOR_RIGHT_IN2         8
-#define PIN_MOTOR_LEFT_ENB          11
-#define PIN_MOTOR_LEFT_IN3          9
-#define PIN_MOTOR_LEFT_IN4          10
-
-#define LEFT  0
-#define RIGHT 1
-#define PREV  0
-#define NOW   1
-
-#define INTERVAL_MOTOR_TEST       5000
-#define INTERVAL_SONAR_TEST       500
-#define INTERVAL_IMU_TEST         2000
-#define INTERVAL_DEBUG_PRINT      2000
-
-#define MIN_SONAR_ANGLE      30
-#define MID_SONAR_ANGLE      90
-#define MAX_SONAR_ANGLE      150
-#define STRID_SONAR_ANGLE     5
-
-
-Servo myServo;  // create servo object to control a servo
 
 long counterLeftWheel[2] = {0,0}; long counterRightWheel[2] = {0,0};
 
 int motorSpeed[2] = {0,0};   // current left/right motor speed {range -255 ~ + 255}
+float cmd_vel[2] = {0.0, 0.0};    // LINEAR 0, ANGULAR 1
+float odom_pose[3] = {0.0, 0.0, 0.0};
+float odom_vel[2] = {0.0, 0.0};
 int controlMode = 0;         // manual control = 0, line following = 1,
 
 int motorTestCount = 0;
@@ -89,8 +58,11 @@ int prevRightCLK, prevRightDT, nowRightCLK, nowRightDT = 0;
 long lCounter, rCounter = 0;
 float cTheta, xLocation, yLocation = 0;
 
-SimpleDeadReckoning mySDR( 122.0, 3.39, 15.5, 0);   // encoder values per one rotation,  wheel radius, distance between two wheels, unit (cm)
 float thetaOffset = 0.0;
+
+MPU6050 mpu (Wire);
+Servo myServo;  // create servo object to control a servo
+SimpleDeadReckoning mySDR( 122.0, 3.39, 15.5, 0);   // encoder values per one rotation,  wheel radius, distance between two wheels, unit (cm)
 
 void setup() {
   // Serial Port Setup
@@ -123,10 +95,10 @@ void setup() {
   // Wheel Encoder Setting
   pinMode(PIN_ENCODER_LEFT_CLK, INPUT_PULLUP);  pinMode(PIN_ENCODER_RIGHT_CLK, INPUT_PULLUP);
   pinMode(PIN_ENCODER_LEFT_DT, INPUT_PULLUP);  pinMode(PIN_ENCODER_RIGHT_DT, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_LEFT_CLK), checkLeftEncoder, CHANGE);  
+//  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_LEFT_CLK), checkLeftEncoder, CHANGE);  
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_LEFT_DT), checkLeftEncoder, CHANGE);  
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_RIGHT_CLK), checkRightEncoder, CHANGE);  
-  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_RIGHT_DT), checkRightEncoder, CHANGE);  
+//  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_RIGHT_DT), checkRightEncoder, CHANGE);  
   // Line Sensor Setting
   pinMode(PIN_IR_LEFT, INPUT_PULLUP);  pinMode(PIN_IR_RIGHT, INPUT_PULLUP);
   // Sonar Setting
@@ -143,7 +115,8 @@ void setup() {
 int cnt = 0;
 void loop() {
   cTime = millis ();
-
+  recieved_py();
+  
   mpu.Execute();
   cTheta = mpu.GetAngZ()- thetaOffset;
   mySDR.updateLocation(lCounter, rCounter, cTheta);
@@ -202,7 +175,9 @@ void loop() {
 //  
 //  delay(30);
 //  
-
+    String odom_temp[8] = {String(odom_pose[0]), String(odom_pose[1]), String(odom_pose[2]), String(odom_vel[0]), String(odom_vel[2])};
+    send_py(odom_temp, 5, ODOM_MSG);
+    
 }
 
 
@@ -273,4 +248,97 @@ void checkRightEncoder(){
       }
    }
 }
-    
+
+
+
+void recieved_py(){
+  if (Serial.available() > 0){
+    char tmpChar = Serial.read();
+    if ((msgBufferPointer == 0) && (tmpChar == '<')){
+      msgBuffer[msgBufferPointer] = tmpChar; 
+      msgBufferPointer++;
+    }
+    else if (msgBufferPointer == 1){
+      if (tmpChar == '!'){ 
+        msgBuffer[msgBufferPointer] = tmpChar; 
+        msgBufferPointer++; 
+      }
+      else{
+        if (tmpChar == '<'){
+          msgBuffer[0] = tmpChar;
+          msgBufferPointer = 1;
+        }else{
+          msgBufferPointer = 0;          
+        }
+      }
+    }
+
+    else if (msgBufferPointer >= 2){
+      if (tmpChar == '<'){ 
+        msgBuffer[0] = tmpChar;
+        msgBufferPointer = 1;
+      }
+      else if (tmpChar == '>'){
+        msgBuffer[msgBufferPointer] = tmpChar;
+        msgBufferPointer = 0;
+        evaluateCommand();
+      }
+      else{
+        msgBuffer[msgBufferPointer] = tmpChar;
+        msgBufferPointer++;
+      }
+    }
+  }
+}
+
+void evaluateCommand(){
+  char* command = strtok(msgBuffer, ",");
+  int temp = 0;
+  String type = "none";
+  while (command != 0){
+    if (temp == 1){
+      if (String(command) == TORQUE_MSG){
+        type = TORQUE_MSG;
+      }
+      else if (String(command) == CMD_MSG){
+        type = CMD_MSG;
+      }
+    }
+
+    if (type == TORQUE_MSG){
+      if (temp == 3){
+        if (String(command) == "true"){
+          Serial.println("Torque-on function will be implemented");
+        }
+        else if (String(command) == "false"){
+          Serial.println("Torque-off function will be implemented");
+        }
+      }
+    }
+    else if (type == CMD_MSG){
+      if (temp == 3){
+        Serial.println(String(String(command).toFloat()));
+        cmd_vel[LINEAR] = String(command).toFloat();
+      }
+      else if (temp == 4){
+        Serial.println(String(String(command).toFloat()));
+        cmd_vel[ANGULAR] = String(command).toFloat();
+      }
+    }
+    temp += 1;
+    command = strtok(0, ",");
+  }
+}
+
+void send_py(String data[], int size, String type){
+  String data_out;
+  data_out = "<!," + type + "," + String(size) + ",";
+  for(int i = 0; i < size; i++){
+    data_out += data[i];
+    data_out += ",";
+  }
+  data_out += "#>";
+
+  Serial.print(data_out);
+  Serial.print("\n");
+}

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Redirect data from a TCP/IP connection to a serial port and vice versa.
 #
@@ -37,17 +37,19 @@ import cv2
 
 img = np.zeros((512,512,3), np.uint8)
 
-ser = serial.Serial('/dev/ttyACM0', 115200) # Establish the connection on a specific port
+#ser = serial.Serial('/dev/ttyACM0', 115200) # Establish the connection on a specific port
+ser = serial.Serial('COM17', 115200) # Establish the connection on a specific port
 counter = 32 # Below 32 everything in ASCII is gibberish
 
 xPnt = 0
 yPnt = 0
 while True:
 	msg = ser.readline() # Read the newest output from the Arduino
-	print msg
+#	print (msg)
 	try:
-   		yPnt = int(msg)
-		img = cv2.line(img,(xPnt,256),(xPnt,yPnt),(255,0,0),5)
+		yPnt = int(msg)
+		print (yPnt)
+		img = cv2.line(img,(xPnt,0),(xPnt,yPnt),(255,255,0),5)
 		cv2.imshow('image',img)
 		cv2.waitKey(3)
 		#cv2.destroyAllWindows()
