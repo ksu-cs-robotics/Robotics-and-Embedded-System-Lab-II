@@ -33,10 +33,12 @@ void updateCommand(){
         msgBufferPointer = 0;
       }
     }else if (msgBufferPointer == 2){
-      if (tmpChar == ' '){     // ' ' (0x20 ==> Space)
-        msgBuffer[msgBufferPointer] = tmpChar; msgBufferPointer++;      
+      if ((msgBuffer[1]=='@') && (tmpChar == ' ')){     // ' ' (0x20 ==> Space) and String format
+           msgBuffer[msgBufferPointer] = tmpChar; msgBufferPointer++;      
+      }else if ((msgBuffer[1]=='!') && (tmpChar='~')) {      // '~' (0x7E ==> ~) and Binary format
+        msgBuffer[msgBufferPointer] = tmpChar; msgBufferPointer++;
       }else{
-        msgBufferPointer = 0;
+          msgBufferPointer = 0;
       }
     }else if (msgBufferPointer > MESSAGE_BUFFER_SIZE){ 
       msgBufferPointer = 0; 
@@ -72,6 +74,18 @@ void evaluateStringCommand(){
 void evaluateBinaryCommand(){
   Serial.print("N/A-");
   echoCommand();
+}
+
+bool isChecksum() {
+  byte sum=0;   
+  for (int i = 0; i < msgBufferPointer; i++){
+     sum = sum + msgBuffer[i];
+  }
+  if (sum == msgBuffer[msgBufferPointer]){
+    return true;
+  }else{
+    return false;
+  }
 }
 
 void echoCommand(){
