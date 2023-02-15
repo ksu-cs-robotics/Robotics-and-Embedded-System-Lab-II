@@ -100,6 +100,29 @@ void Display::print(const char num[5]) {
 }
 #endif
 
+void Display::print(String str) {
+  //this function takes a string type value as argument and display the value in the 4 digit display without any decimal point
+  toggle(false);
+
+  /* Display one digit at a time */
+  for (int i = 0; i < str.length(); i++) {
+
+    /* Toggle segments for current digit */
+    for (int j = 0; j < 7; j++) {
+      segments[j]->toggle(num_segs[str[i] - 0x30][j]);
+    }
+
+    /* Add 1ms offset for previous digit to clear, in order to prevent flickering from upcoming digit */
+    delay(1);
+    digits[i]->toggle(true);
+
+    /* Provide digit sufficient time to display */
+    delay(1);
+    digits[i]->toggle(false);
+  }
+}
+
+
 /* Enable/Disable all digits */
 void Display::toggle() {
   state = !state;

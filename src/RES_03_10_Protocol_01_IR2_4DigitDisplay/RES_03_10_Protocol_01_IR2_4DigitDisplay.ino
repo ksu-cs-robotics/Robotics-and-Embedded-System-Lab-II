@@ -21,24 +21,45 @@
 #include "Digit.h"
 #include "Display.h"
 #include <IRremote.h>
+#include <Servo.h>
+
 unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
-
+Servo myservo; 
+extern Display d;
 void setup() {
   // put your setup code here, to run once:
   initialization();
  
 }
 
+//"<@ 2 1000 2000 1500>"
+
 void loop() {
   currentMillis = millis();
-  updateCommand();
-  printLED();
+  sensing();
+  thinking();
+  acting();
   previousMillis = currentMillis;  
+}
+
+void sensing(){
+  
+}
+void thinking(){
+  updateCommand();
+}
+void acting(){
+  updateServo();
+}
+void updateServo(){
+  myservo.write(servoSpeed[0]);
+  d.print(String(servoSpeed[0]));
 }
 
 void initialization(){
   currentMillis = millis();
+  myservo.attach(A1);   
   init_communication();
   init_pin();  
   init_receiver();
