@@ -25,6 +25,7 @@ typedef struct{
 
 extern remoteMessageMap remoteMessagemapArray[22];
 
+
 typedef struct{
   bool checkValidchar;
   char validChar;

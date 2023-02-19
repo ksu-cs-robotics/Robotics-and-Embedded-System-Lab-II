@@ -20,8 +20,9 @@
 #include "Segment.h"
 #include "Digit.h"
 #include "Display.h"
-#include <IRremote.h>
+#include "IRremote.h"
 #include <Servo.h>
+
 
 unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
@@ -63,12 +64,11 @@ void initialization(){
   init_communication();
   init_pin();  
   init_receiver();
-  message_mapping();
   init_pin_mode();
 }
 
 void init_communication(){
-  Serial.begin(115200); Serial.println("Program Start...v04");
+  Serial.begin(9600); Serial.println("Program Start...v04");
   init_buffer(); 
 }
 

@@ -23,20 +23,29 @@ IRsend irsend;
 void setup()
 {
   Serial.begin(9600);
+  Serial.println("ver1--");
+  message_mapping();
 }
 
 void loop() {
   if (Serial.available() > 0) {
     char a = Serial.read();    
-//    irsend.sendSony(0xa90, 12); // Sony TV power code
-    
-    irsend.sendNEC(convertIRMessage(a); 32); // Sony TV power code
-    
+//    irsend.sendSony(0xa90, 12); // Sony TV power code    
+    irsend.sendNEC(convertCharRemoteLong1(a), 32); // Sony TV power code
+//    irsend.sendNEC(convertCharRemoteLong1(0xFFFFFFFF), 32); // Sony TV power code
+    Serial.println(convertCharRemoteLong1(a)); // Sony TV power code
   }
 }
-
-long convertIRMessage(char argChar){
-  for (int i = 0; i < 22; i++){
-    
+long convertCharRemoteLong1(char argChar){
+  //this function returns a specific character based on the map table when a button in the remote is pressed
+  long out = -1;
+  for (int i=0;i<22;i++){
+//   Serial.print("["); Serial.print(i); Serial.print("]");Serial.print("{"); Serial.print(argChar); Serial.print("}");
+//   Serial.println(remoteMessagemapArray[i].charRemote);
+    if (remoteMessagemapArray[i].charRemote == argChar){
+//      Serial.println(remoteMessagemapArray[i].charRemote);
+      out = remoteMessagemapArray[i].value;
+    }
   }
+  return out;
 }
