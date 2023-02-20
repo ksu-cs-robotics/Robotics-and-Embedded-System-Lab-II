@@ -54,8 +54,8 @@ void acting(){
   updateServo();
 }
 void updateServo(){
-  myservo.write(servoSpeed[0]);
-  d.print(String(servoSpeed[0]));
+  myservo.write(servoAngle[0]);
+  d.print(String(servoAngle[0]));
 }
 
 void initialization(){

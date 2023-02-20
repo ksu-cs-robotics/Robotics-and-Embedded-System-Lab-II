@@ -15,7 +15,9 @@ char charBuffer[2]; //this buffer is used to hold the corresponding IR remote ke
 char tmpChar;
 int index=0;
 String tokenizedString[3]= {"","",""};//empty buffer to hold the data from the frame
-int servoSpeed[3] = {0,0,0};
+int servoAngle[3] = {0,0,0};
+int motorSpeed[2] = {0,0};
+
 decode_results results; 
 remoteMessageMap remoteMessagemapArray[22]; // this array is used to map the IR remote key to a specific character
 remoteMessageMap remoteMessagemapArray2[] = {{16753245,'p'},{16736925,'v'},{16769565,'f'},{16720605,'<'},{16712445,' '},{16761405,'>'},{16769055,'/'},{16754775,'-'},
@@ -33,7 +35,13 @@ void evaluateBinaryCommand();
 void echoCommand();
 void getServoCommand();
 void setServoCommand();
-
+void getSpeedCommand();
+void setSpeedCommand();
+void getServoBinaryCommand();
+void setServoBinaryCommand();
+void getSpeedBinaryCommand();
+void setSpeedBinaryCommand();
+bool checkCRC();
 
 void init_receiver(){
   receiver.enableIRIn(); // enable the receiver
@@ -159,22 +167,68 @@ void printLED(){
 }
 
 void evaluateStringCommand(){
- 
   if (msgBuffer[3] == MSG_GET_ECHO)   echoCommand();
   else if (msgBuffer[3] == MSG_GET_SERVO) getServoCommand();
   else if (msgBuffer[3] == MSG_SET_SERVO) setServoCommand();
-  else if (msgBuffer[3] == MSG_EVALUATE_BINARY) evaluateBinaryCommand();
+  else if (msgBuffer[3] == MSG_GET_SPEED) getSpeedCommand();
+  else if (msgBuffer[3] == MSG_SET_SPEED) setSpeedCommand();
   
 }
+
+bool checkCRC(){
+  int crcVal=0;
+  for (int i =0; i < msgBufferPointer; i++){
+    crcVal += msgBuffer[i];
+  }
+  if (crcVal == msgBuffer[msgBufferPointer]){
+    return true;
+  }else{
+    return false;
+  }
+}
+
 void evaluateBinaryCommand(){
-  Serial.println("N/A-");
-  //echoCommand();
+  if (checkCRC()){
+    if (msgBuffer[4] == MSG_GET_ECHO)   echoCommand();
+    else if (msgBuffer[4] == MSG_GET_SERVO) getServoBinaryCommand();
+    else if (msgBuffer[4] == MSG_SET_SERVO) setServoBinaryCommand();
+    else if (msgBuffer[4] == MSG_GET_SPEED) getSpeedBinaryCommand();
+  //  else if (msgBuffer[4] == MSG_SET_SPEED) setSpeedBinaryCommand();
+  }else{
+    Serial.println(" CRC Error "):
+  }
+}
+
+void setServoBinaryCommand(){
+  servoAngle[0] = msgBuffer[5];
+  servoAngle[0] +=(uint16_t)msgBuffer[6] << 8; 
+  servoAngle[1] = msgBuffer[7];
+  servoAngle[1] +=(uint16_t)msgBuffer[8] << 8; 
+  servoAngle[2] = msgBuffer[9];
+  servoAngle[2] +=(uint16_t)msgBuffer[10] << 8; 
+}
+
+
+
+
+void getServoBinaryCommand(){
+  getServoCommand();
+}
+void getSpeedBinaryCommand(){
+  getSpeedCommand();
 }
 
 void getServoCommand(){
-  Serial.print(servoSpeed[0]); Serial.print(":");
-  Serial.print(servoSpeed[1]); Serial.print(":");
-  Serial.println(servoSpeed[2]);
+  Serial.print("Serve Poistion: ");
+  Serial.print(servoAngle[0]); Serial.print(":");
+  Serial.print(servoAngle[1]); Serial.print(":");
+  Serial.println(servoAngle[2]);
+}
+
+void getSpeedCommand(){
+  Serial.print("Motor Speed: ");  Serial.print(motorSpeed[0]); Serial.print(":");
+  Serial.println(motorSpeed[1]);
+
 }
 
 void setServoCommand(){
@@ -185,15 +239,32 @@ void setServoCommand(){
     if (cnt == 0){ 
     }else if(cnt == 1){         
     }else if(cnt == 2){         
-      servoSpeed[0] = str.toInt();
+      servoAngle[0] = str.toInt();
     }else if (cnt == 3){   
-      servoSpeed[1] = str.toInt();
+      servoAngle[1] = str.toInt();
     }else if (cnt == 4){    
-      servoSpeed[2] = str.toInt();
+      servoAngle[2] = str.toInt();
     }
     cnt++; 
  }
 }
+
+void setSpeedCommand(){
+ char *p = msgBuffer;
+ String str;
+ int cnt =0;
+ while ((str = strtok_r(p, " ", &p)) != NULL){ // delimiter is the space
+    if (cnt == 0){ 
+    }else if(cnt == 1){         
+    }else if(cnt == 2){         
+      motorSpeed[0] = str.toInt();
+    }else if (cnt == 3){   
+      motorSpeed[1] = str.toInt();
+    }
+    cnt++; 
+ }
+}
+
 
 void echoCommand(){
   Serial.print("[");

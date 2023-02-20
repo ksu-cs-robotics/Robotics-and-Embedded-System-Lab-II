@@ -7,7 +7,8 @@
 #define MSG_GET_ECHO                 0x31   // '1' in message       message echo         
 #define MSG_GET_SERVO                0x32   //'2' in message      
 #define MSG_SET_SERVO                0x33   //'3' in message      
-#define MSG_EVALUATE_BINARY          0x39   //'9' in message      
+#define MSG_GET_SPEED                0x38   //'8' in message      
+#define MSG_SET_SPEED                0x39   //'9' in message      
 
 
 #define MESSAGE_BUFFER_SIZE          64
@@ -16,7 +17,8 @@
 extern char msgBuffer[MESSAGE_BUFFER_SIZE]; 
 extern int msgBufferPointer;
 extern char receiveChar;
-extern int servoSpeed[3];
+extern int servoAngle[3];
+extern int motorSpeed[2];
 
 typedef struct{
   unsigned long value;
