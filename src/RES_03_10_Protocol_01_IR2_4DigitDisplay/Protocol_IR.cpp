@@ -176,7 +176,7 @@ void evaluateStringCommand(){
 }
 
 bool checkCRC(){
-  int crcVal=0;
+  byte crcVal=0;
   for (int i =0; i < msgBufferPointer; i++){
     crcVal += msgBuffer[i];
   }
@@ -187,6 +187,13 @@ bool checkCRC(){
   }
 }
 
+//size of message = 1byte
+//three servo values = 2byte(int)+ 2 byte (int) + 2 byte (int)
+//
+//'<''!'' '0x0B(int servo1)(int servo2)(int servo3)(one byte CRC) 
+//
+//byte testMessage[]={'<','!',' ',0x0B,0x00,0x07,0xB0 
+
 void evaluateBinaryCommand(){
   if (checkCRC()){
     if (msgBuffer[4] == MSG_GET_ECHO)   echoCommand();
@@ -195,7 +202,7 @@ void evaluateBinaryCommand(){
     else if (msgBuffer[4] == MSG_GET_SPEED) getSpeedBinaryCommand();
   //  else if (msgBuffer[4] == MSG_SET_SPEED) setSpeedBinaryCommand();
   }else{
-    Serial.println(" CRC Error "):
+    Serial.println(" CRC Error ");
   }
 }
 
@@ -208,7 +215,20 @@ void setServoBinaryCommand(){
   servoAngle[2] +=(uint16_t)msgBuffer[10] << 8; 
 }
 
-
+void makeServoBinaryCommand(){
+  int servo1  = 1000;  // 0b 0000 0111 1101 0000
+  
+  byte temp1 = servo1 << 8; //0b 1101 0000 0000 0000
+  
+  byte temp2 = servo1 >> 8; //0b 0000 0000 0000 0111 
+  byte servo2Byte [2];
+  servo2Byte[0] = temp1;
+  servo2Byte[1] = temp2;
+  
+  int servo2 = 1001;
+  int servo3 = 1002;
+  
+}
 
 
 void getServoBinaryCommand(){

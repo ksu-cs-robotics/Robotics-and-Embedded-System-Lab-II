@@ -16,7 +16,7 @@
 *
 *********************************************************************/
 #include <IRremote.h>
-/************************************** ATR Lab Simple UGV Protocol *******************************************************/
+
 #define UGV_VERSION              1
 
 #define MSG_GET_ECHO                 0x31   //'1' in message       message echo         
@@ -26,6 +26,11 @@
 #define MSG_SET_SPEED                0x39   //'9' in message      
 
 #define MESSAGE_BUFFER_SIZE          64
+
+#define PIN_JOYSTICK_X    A0
+#define PIN_JOYSTICK_Y    A1
+#define PIN_JOYSTICK_SW    A2
+#define INTERVAL_JOYSTICK   1000
 
 typedef struct{
   unsigned long value;
@@ -43,21 +48,77 @@ remoteMessageMap remoteMessagemapArray[] = {{16753245,'p'},{16736925,'v'},{16769
 
 
 IRsend irsend;
+int joyStick[]={0,0,0};
+unsigned long currentMillis = 0;
+unsigned long previousMillis = 0;
+unsigned long joystickUpdateTime = 0;
+unsigned long joystickSendingTime = 0;
 
-void setup()
-{
+void setup(){
   Serial.begin(9600);
   Serial.println("ver1--");
+  pinMode(PIN_JOYSTICK_X, INPUT); pinMode(PIN_JOYSTICK_Y, INPUT); 
+  pinMode(PIN_JOYSTICK_SW, INPUT_PULLUP);
+  joystickUpdateTime = millis()+INTERVAL_JOYSTICK;
+  joystickSendingTime = millis()+INTERVAL_JOYSTICK;
 }
 
+
 void loop() {
+  currentMillis = millis();
   if (Serial.available() > 0) {
     char tmpChar = Serial.read();    
     irsend.sendNEC(convertCharRemoteLong(tmpChar), 32); // Sony TV power code
     Serial.println(convertCharRemoteLong(tmpChar)); // Sony TV power code
+    Serial.print(joyStick[0]); Serial.print(":"); Serial.print(joyStick[1]); Serial.print(":"); Serial.println(joyStick[2]); 
   }
+  updateJoystick();
+  sendJoystickValue();
+  previousMillis = currentMillis; 
 }
 
+void updateJoystick(){
+  if (joystickUpdateTime < currentMillis){
+    joyStick[0] = map(analogRead(PIN_JOYSTICK_X), 0, 1024, 1000, 2000);
+    joyStick[1] = map(analogRead(PIN_JOYSTICK_Y), 0, 1024, 1000, 2000);
+    joyStick[2] = digitalRead(PIN_JOYSTICK_SW); 
+    joystickUpdateTime = currentMillis + INTERVAL_JOYSTICK;
+  }
+}
+void sendJoystickValue(){
+  if (joystickSendingTime < currentMillis){
+    irsend.sendNEC(convertCharRemoteLong('<'), 32); 
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('@'), 32); 
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong(' '), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong(MSG_SET_SERVO), 32); 
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong(' '), 32); 
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('1'), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('1'), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong(' '), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('2'), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('2'), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong(' '), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('3'), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('3'), 32);
+    delay(10);
+    irsend.sendNEC(convertCharRemoteLong('>'), 32);
+    delay(10);
+     Serial.print(joystickSendingTime); Serial.print("=");Serial.print(joyStick[0]); Serial.print(":"); Serial.print(joyStick[1]); Serial.print(":"); Serial.println(joyStick[2]); 
+    joystickSendingTime = currentMillis + INTERVAL_JOYSTICK;
+  }
+}
 
 
 
