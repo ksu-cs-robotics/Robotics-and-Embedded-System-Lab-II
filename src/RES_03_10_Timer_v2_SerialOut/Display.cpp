@@ -39,66 +39,7 @@ num_segs_t num_segs
   {true, true, true, true, false, true, true}      // 9
 };
 
-#ifdef DISABLE_DP
-void Display::print(const char num[4]) {
 
-  toggle(false);
-
-  /* Display one digit at a time */
-  for (int i = 0; i < strlen(num); i++) {
-
-    /* Toggle segments for current digit */
-    for (int j = 0; j < 7; j++) {
-      segments[j]->toggle(num_segs[num[i] - 0x30][j]);
-    }
-
-    /* Add 1ms offset for previous digit to clear, in order to prevent flickering from upcoming digit */
-    delay(1);
-    digits[i]->toggle(true);
-
-    /* Provide digit sufficient time to display */
-    delay(1);
-    digits[i]->toggle(false);
-  }
-}
-
-#else
-
-void Display::print(const char num[5]) {
-
-  toggle(false);
-
-  bool next_char_dp = false;
-  int is_dp_num = 0;
-
-  /* Display one digit at a time */
-  for (int i = 0; i < strlen(num); i++) {
-
-    /* Toggle segments for current digit */
-    for (int j = 0; j < 7; j++) {
-      segments[j]->toggle(num_segs[num[i] - 0x30][j]);
-    }
-
-    /* Next character is decimal point */
-    next_char_dp  = (i + 1 < 5 && num[i + 1] == '.');
-
-    /* Add 1ms offset for previous digit to clear, in order to prevent flickering from upcoming digit */
-    delay(1);
-    digits[i - is_dp_num]->toggle(true);
-    dp->toggle(next_char_dp); // Turn decimal point on if next character is decimal point
-
-    /* Provide digit sufficient time to display */
-    delay(1);
-    digits[i - is_dp_num]->toggle(false);
-    dp->toggle(false);
-
-    /* Indicate that we're wokring with a decimal point number */
-    if (next_char_dp && !is_dp_num && ++i) {
-      is_dp_num = 1;
-    }
-  }
-}
-#endif
 
 
 
@@ -139,6 +80,7 @@ void Display::print(String str) {
     
   }
 }
+
 
 /* Enable/Disable all digits */
 void Display::toggle() {

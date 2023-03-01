@@ -96,49 +96,10 @@ void Display::print(const char num[5]) {
     if (next_char_dp && !is_dp_num && ++i) {
       is_dp_num = 1;
     }
+    
   }
 }
 #endif
-
-
-
-void Display::print(String str) {
-  //this function takes a string type value as argument and display the value in the 4 digit display without any decimal point
-  toggle(false);
-
-  bool next_char_dp = false;    // dp
-  int is_dp_num = 0;            // dp
-
-
-  /* Display one digit at a time */
-  for (int i = 0; i < str.length(); i++) {
-
-    /* Toggle segments for current digit */
-    for (int j = 0; j < 7; j++) {
-      segments[j]->toggle(num_segs[str[i] - 0x30][j]);
-    }
-
-    /* Next character is decimal point */
-    next_char_dp  = (i + 1 < 5 && str[i + 1] == '.');
-    
-    /* Add 1ms offset for previous digit to clear, in order to prevent flickering from upcoming digit */
-    delayMicroseconds(50);
-    digits[i - is_dp_num]->toggle(true); // dp
-    digits[i]->toggle(true);
-
-    /* Provide digit sufficient time to display */
-    delayMicroseconds(50);
-    digits[i - is_dp_num]->toggle(false); // dp
-    digits[i]->toggle(false);
-
-    /* Indicate that we're wokring with a decimal point number */
-    if (next_char_dp && !is_dp_num && ++i) {
-      is_dp_num = 1;
-    }
-
-    
-  }
-}
 
 /* Enable/Disable all digits */
 void Display::toggle() {

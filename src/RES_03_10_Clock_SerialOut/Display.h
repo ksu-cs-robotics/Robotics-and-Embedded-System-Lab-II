@@ -67,7 +67,7 @@ public:
 #else
   void print(const char num[5]);
 #endif
-  void print(String str);
+
   /* Enable/Disable all digits */
   void toggle();
   void toggle(bool arg_state);
