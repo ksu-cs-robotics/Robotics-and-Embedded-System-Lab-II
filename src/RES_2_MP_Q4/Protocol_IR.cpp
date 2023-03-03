@@ -1,5 +1,5 @@
 #include "Arduino.h"
-#include "Protocol_IR_Display.h"
+#include "Protocol_Midterm_Project.h"
 #include "Segment.h"
 #include "Digit.h"
 #include "Display.h"
@@ -19,22 +19,16 @@ int servoAngle[3] = {0,0,0};
 int motorSpeed[2] = {0,0};
 
 decode_results results; 
-//remoteMessageMap remoteMessagemapArray[22]; // this array is used to map the IR remote key to a specific character
-//remoteMessageMap remoteMessagemapArray2[] = {{16753245,'p'},{16736925,'v'},{16769565,'f'},{16720605,'<'},{16712445,' '},{16761405,'>'},{16769055,'/'},{16754775,'-'},
-//{16748655 ,'#'},{ 16738455,'0'},{16750695 ,'@'},{ 16756815,'$'},{ 16724175,'1'},{16718055 ,'2'},{16743045 ,'3'},{16716015 ,'4'},{16726215 ,'5'},{16734885 ,'6'},
-//{ 16728765,'7'},{ 16730805,'8'},{16732845 ,'9'},{4294967295 ,'I'}};
+remoteMessageMap remoteMessagemapArray[22]; // this array is used to map the IR remote key to a specific character
+remoteMessageMap remoteMessagemapArray2[] = {{16753245,'p'},{16736925,'v'},{16769565,'f'},{16720605,'<'},{16712445,' '},{16761405,'>'},{16769055,'/'},{16754775,'-'},
+{16748655 ,'#'},{ 16738455,'0'},{16750695 ,'@'},{ 16756815,'$'},{ 16724175,'1'},{16718055 ,'2'},{16743045 ,'3'},{16716015 ,'4'},{16726215 ,'5'},{16734885 ,'6'},
+{ 16728765,'7'},{ 16730805,'8'},{16732845 ,'9'},{4294967295 ,'I'}};
   
-remoteMessageMap remoteMessagemapArray[] = {{16753245,'p'},{16736925,'v'},{16769565,'f'},{16720605,FRAME_START_SYMBOL},{16712445,FRAME_DELIMITER_SYMBOL},
-                                            {16761405,FRAME_END_SYMBOL},{16769055,'/'},{16754775,'-'},{16748655 ,'#'},{ 16738455,'0'},
-                                            {16750695 ,FRAME_MODE_SYMBOL},{ 16756815,'$'},{ 16724175,'1'},{16718055 ,'2'},{16743045 ,'3'},
-                                            {16716015 ,'4'},{16726215 ,'5'},{16734885 ,'6'},{ 16728765,'7'},{ 16730805,'8'},
-                                            {16732845 ,'9'},{4294967295 ,'I'}};
-
 
 const byte digit_pins[4] {2, 3, 4, 5}; // From com1 - com4
 const byte segment_pins[7] {6, 7, 8, 9, 10, 11, 12}; // From a - g (abc...g)
 const byte dp_pin = 13;
-Display d(digit_pins, segment_pins, dp_pin);
+
 
 void evaluateStringCommand();
 void evaluateBinaryCommand();
@@ -53,20 +47,6 @@ void init_receiver(){
   receiver.enableIRIn(); // enable the receiver
   receiver.blink13(true);
 }
-void init_pin_mode(){
-  pinMode(2, OUTPUT);  
-  pinMode(3, OUTPUT);  
-  pinMode(4, OUTPUT);  
-  pinMode(5, OUTPUT);  
-  pinMode(6, OUTPUT);  
-  pinMode(7, OUTPUT);
-  pinMode(8, OUTPUT);  
-  pinMode(9, OUTPUT);  
-  pinMode(10, OUTPUT);  
-  pinMode(11, OUTPUT);  
-  pinMode(12, OUTPUT);  
-  pinMode(13, OUTPUT);
-}
 
 
 void init_buffer(){
@@ -80,8 +60,8 @@ void init_buffer(){
 char convertRemoteSymboltoChar2(){
   //this function returns a specific character based on the map table when a button in the remote is pressed
   for (int i=0;i<22;i++){
-    if (remoteMessagemapArray[i].value == results.value){
-      return remoteMessagemapArray[i].charRemote;
+    if (remoteMessagemapArray2[i].value == results.value){
+      return remoteMessagemapArray2[i].charRemote;
     }    
   }
   return 0x00;
@@ -132,7 +112,7 @@ void updateCommand(){
         }
       }
       else if (msgBufferPointer == 2){
-        if (tmpChar == FRAME_DELIMITER_SYMBOL){     // ' ' (0x20 ==> Space)
+        if (tmpChar ==  FRAME_DELIMITER_SYMBOL){     // ' ' (0x20 ==> Space)
           msgBuffer[msgBufferPointer] = tmpChar; msgBufferPointer++;      
         } 
         else{
@@ -141,7 +121,7 @@ void updateCommand(){
       } 
       else if (msgBufferPointer > MESSAGE_BUFFER_SIZE){ 
         msgBufferPointer = 0; 
-        if ( tmpChar == FRAME_START_SYMBOL){
+        if ( tmpChar == FRAME_END_SYMBOL){
           msgBuffer[0] = tmpChar;    
           msgBufferPointer = 1;          
         }
@@ -167,10 +147,6 @@ void updateCommand(){
 
 }
 
-void printLED(){
-  
-  d.print(tokenizedString[2].c_str());
-}
 
 void evaluateStringCommand(){
   if (msgBuffer[3] == MSG_GET_ECHO)   echoCommand();

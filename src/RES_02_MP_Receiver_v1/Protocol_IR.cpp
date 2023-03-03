@@ -261,7 +261,7 @@ void setServoCommand(){
  char *p = msgBuffer;
  String str;
  int cnt =0;
- while ((str = strtok_r(p, " ", &p)) != NULL){ // delimiter is the space
+ while ((str = strtok_r(p, ",", &p)) != NULL){ // delimiter is the space
     if (cnt == 0){ 
     }else if(cnt == 1){         
     }else if(cnt == 2){         
