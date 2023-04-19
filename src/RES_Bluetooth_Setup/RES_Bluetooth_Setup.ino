@@ -44,7 +44,7 @@
 *       -- e.g. "AT+NAME=KIM_MASTER"  then you will see "OK"
 *       -- for checking the updated result, type "AT+NAME", then you should see "+NAME:KIM_MASTER"  
 *     5) Communication Speed Setup (115200 bps)
-*       -- type "AT+UART=115200,2,1"      //   -- "AT+UART=115200,0,0" is defulat of Arduino but no good perfomance in this bluetooth module
+*       -- type "AT+UART=115200,0,0" is defulat of Arduino but if this configuration provides no good perfomance, then use "AT+UART=115200,1,2" in this bluetooth module
 *       
 *     6) Setup Slave Bluetooth
 *       1) Get Bluetooth Address for paring purpuse so you need to note the address
